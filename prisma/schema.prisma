@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EvidenceRelationType {
+  MANAGER_ELEMENT
+  TEACHER
+  TEACHER_EVALUATION
+  GENERAL
+}
+
+enum EvidenceStatus {
+  DRAFT
+  VERIFIED
+  ARCHIVED
+}
+
+model User {
+  id                     String                   @id @default(cuid())
+  fullName               String
+  email                  String                   @unique
+  passwordHash           String
+  schoolName             String
+  educationOffice        String
+  academicYear           String
+  createdAt              DateTime                 @default(now())
+  teachers               Teacher[]
+  evaluations            TeacherEvaluation[]
+  evidences              Evidence[]
+  managerElementProgress ManagerElementProgress[]
+  schoolSettings         SchoolSettings?
+}
+
+model Teacher {
+  id             String              @id @default(cuid())
+  userId         String
+  fullName       String
+  nationalId     String?
+  specialization String?
+  subject        String?
+  className      String?
+  createdAt      DateTime            @default(now())
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  evaluations    TeacherEvaluation[]
+}
+
+model TeacherEvaluation {
+  id                    String    @id @default(cuid())
+  userId                String
+  teacherId             String
+  followupNo            String
+  visitDate             DateTime
+  lessonTitle           String
+  finalScoreOutOfFive   Decimal   @db.Decimal(3, 2)
+  performanceLabel      String
+  strengths             String
+  developmentPoints     String
+  aiFeedback            String
+  managerName           String
+  teacherSignature      String?
+  managerSignature      String?
+  rubricJson            Json
+  createdAt             DateTime  @default(now())
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teacher               Teacher   @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+}
+
+model Evidence {
+  id           String               @id @default(cuid())
+  userId       String
+  title        String
+  relatedType  EvidenceRelationType
+  relatedRef   String?
+  evidenceType String
+  status       EvidenceStatus       @default(DRAFT)
+  evidenceDate DateTime
+  notes        String?
+  attachments  String[]
+  createdAt    DateTime             @default(now())
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ManagerElementProgress {
+  id           String   @id @default(cuid())
+  userId       String
+  elementTitle String
+  isDone       Boolean  @default(false)
+  notes        String?
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SchoolSettings {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  schoolLogo            String?
+  managerSignatureImage String?
+  officialStampImage    String?
+  printHeader           String?
+  createdAt             DateTime @default(now())
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
