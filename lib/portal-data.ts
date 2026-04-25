@@ -841,3 +841,94 @@ export async function getExternalEvaluationDomainData(userId: string, domainId: 
     throw error;
   }
 }
+
+export async function getAdminOverviewData() {
+  try {
+    const [users, activeUsers, schools, evaluations, evidences, recentUsers] = await Promise.all([
+      prisma.user.count(),
+      prisma.user.count({ where: { isActive: true } }),
+      prisma.user.findMany({
+        select: { schoolName: true },
+        distinct: ["schoolName"],
+      }),
+      prisma.teacherEvaluation.count(),
+      prisma.evidence.count(),
+      prisma.user.findMany({
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          schoolName: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: "desc" },
+        take: 6,
+      }),
+    ]);
+
+    return {
+      isDatabaseReady: true,
+      metrics: {
+        totalUsers: users,
+        activeUsers,
+        totalSchools: schools.length,
+        totalEvaluations: evaluations,
+        totalEvidences: evidences,
+      },
+      recentUsers,
+    };
+  } catch (error) {
+    if (isPrismaConnectionError(error)) {
+      return {
+        isDatabaseReady: false,
+        metrics: {
+          totalUsers: 0,
+          activeUsers: 0,
+          totalSchools: 0,
+          totalEvaluations: 0,
+          totalEvidences: 0,
+        },
+        recentUsers: [],
+      };
+    }
+    throw error;
+  }
+}
+
+export async function getAdminUsersData() {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        schoolName: true,
+        educationOffice: true,
+        academicYear: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+        _count: {
+          select: {
+            teachers: true,
+            evaluations: true,
+            evidences: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return {
+      isDatabaseReady: true,
+      users,
+    };
+  } catch (error) {
+    if (isPrismaConnectionError(error)) {
+      return { isDatabaseReady: false, users: [] };
+    }
+    throw error;
+  }
+}

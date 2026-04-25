@@ -28,3 +28,23 @@ export async function requireApiSession() {
 
   return session;
 }
+
+export async function requireAdminSession() {
+  const session = await requireSession();
+
+  if (session.user.role !== "SUPER_ADMIN") {
+    redirect("/dashboard");
+  }
+
+  return session;
+}
+
+export async function requireAdminApiSession() {
+  const session = await requireApiSession();
+
+  if (session.user.role !== "SUPER_ADMIN") {
+    throw new UnauthorizedApiError("هذه العملية متاحة للمشرف العام فقط.");
+  }
+
+  return session;
+}

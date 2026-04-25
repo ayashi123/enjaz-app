@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { PrismaClient, EvidenceRelationType, EvidenceStatus } from "@prisma/client";
+import { EvidenceRelationType, EvidenceStatus, PrismaClient, UserRole } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -13,13 +13,18 @@ const managerElements = [
 async function main() {
   const passwordHash = await bcrypt.hash("Enjaz@12345", 12);
 
-  const user = await prisma.user.upsert({
+  const schoolManager = await prisma.user.upsert({
     where: { email: "principal@enjaz.sa" },
-    update: {},
+    update: {
+      role: UserRole.SCHOOL_MANAGER,
+      isActive: true,
+    },
     create: {
       fullName: "أ. سارة العتيبي",
       email: "principal@enjaz.sa",
       passwordHash,
+      role: UserRole.SCHOOL_MANAGER,
+      isActive: true,
       schoolName: "مدرسة إنجاز النموذجية",
       educationOffice: "مكتب تعليم شمال الرياض",
       academicYear: "1447 / 1448 هـ",
@@ -31,13 +36,31 @@ async function main() {
     },
   });
 
+  await prisma.user.upsert({
+    where: { email: "admin@enjaz.sa" },
+    update: {
+      role: UserRole.SUPER_ADMIN,
+      isActive: true,
+    },
+    create: {
+      fullName: "المشرف العام",
+      email: "admin@enjaz.sa",
+      passwordHash,
+      role: UserRole.SUPER_ADMIN,
+      isActive: true,
+      schoolName: "إدارة منصة إنجاز التعليمية",
+      educationOffice: "الإشراف العام",
+      academicYear: "1447 / 1448 هـ",
+    },
+  });
+
   const teachers = await Promise.all([
     prisma.teacher.upsert({
       where: { id: "seed-teacher-1" },
       update: {},
       create: {
         id: "seed-teacher-1",
-        userId: user.id,
+        userId: schoolManager.id,
         fullName: "أ. نوف المطيري",
         nationalId: "1023456789",
         specialization: "اللغة العربية",
@@ -50,7 +73,7 @@ async function main() {
       update: {},
       create: {
         id: "seed-teacher-2",
-        userId: user.id,
+        userId: schoolManager.id,
         fullName: "أ. فيصل الحربي",
         nationalId: "1034567890",
         specialization: "الرياضيات",
@@ -63,7 +86,7 @@ async function main() {
   await prisma.evidence.createMany({
     data: [
       {
-        userId: user.id,
+        userId: schoolManager.id,
         title: "محضر اجتماع أولياء الأمور",
         relatedType: EvidenceRelationType.GENERAL,
         evidenceType: "محضر",
@@ -73,7 +96,7 @@ async function main() {
         attachments: ["parent-meeting.pdf"],
       },
       {
-        userId: user.id,
+        userId: schoolManager.id,
         title: "خطة دعم نتائج المتعلمين",
         relatedType: EvidenceRelationType.TEACHER,
         relatedRef: teachers[0].id,
@@ -90,12 +113,12 @@ async function main() {
   for (const elementTitle of managerElements) {
     await prisma.managerElementProgress.upsert({
       where: {
-        id: `${user.id}-${elementTitle}`,
+        id: `${schoolManager.id}-${elementTitle}`,
       },
       update: {},
       create: {
-        id: `${user.id}-${elementTitle}`,
-        userId: user.id,
+        id: `${schoolManager.id}-${elementTitle}`,
+        userId: schoolManager.id,
         elementTitle,
         isDone: elementTitle !== managerElements[2],
         notes: "تم إنشاؤه عبر seed لتهيئة لوحة القيادة.",
