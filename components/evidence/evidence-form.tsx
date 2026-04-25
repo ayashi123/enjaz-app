@@ -57,7 +57,7 @@ export function EvidenceForm({
       throw new Error(payload?.message || "تعذر رفع الملفات.");
     }
 
-    const payload = (await response.json()) as { files: string[]; provider?: "local" | "supabase" };
+    const payload = (await response.json()) as { files: string[] };
     return payload.files;
   }
 
@@ -106,6 +106,7 @@ export function EvidenceForm({
       <Field label="عنوان الشاهد">
         <Input value={title} onChange={(event) => setTitle(event.target.value)} />
       </Field>
+
       <Field label="نوع الارتباط">
         <select
           className="flex h-11 w-full rounded-2xl border border-input bg-white px-4 py-2 text-sm"
@@ -121,6 +122,7 @@ export function EvidenceForm({
           <option value="MANAGER_ELEMENT">عنصر مدير</option>
         </select>
       </Field>
+
       {relatedType !== "GENERAL" ? (
         <Field label="المرجع المرتبط">
           <select
@@ -137,12 +139,12 @@ export function EvidenceForm({
           </select>
         </Field>
       ) : null}
+
       <Field label="نوع الشاهد">
         <select
           className="flex h-11 w-full rounded-2xl border border-input bg-white px-4 py-2 text-sm"
           value={evidenceType}
           onChange={(event) => setEvidenceType(event.target.value as (typeof managerEvidenceTypes)[number])}
-          required
         >
           {managerEvidenceTypes.map((option) => (
             <option key={option} value={option}>
@@ -151,6 +153,7 @@ export function EvidenceForm({
           ))}
         </select>
       </Field>
+
       <Field label="حالة الشاهد">
         <select
           className="flex h-11 w-full rounded-2xl border border-input bg-white px-4 py-2 text-sm"
@@ -162,19 +165,24 @@ export function EvidenceForm({
           <option value="ARCHIVED">مؤرشف</option>
         </select>
       </Field>
+
       <Field label="تاريخ الشاهد">
         <Input type="date" value={evidenceDate} onChange={(event) => setEvidenceDate(event.target.value)} />
       </Field>
+
       <div className="md:col-span-2">
         <Field label="الملاحظات">
           <Textarea value={notes} onChange={(event) => setNotes(event.target.value)} />
         </Field>
       </div>
+
       <div className="md:col-span-2">
         <Field label="المرفقات">
           <div className="rounded-[24px] border border-dashed border-slate-300 bg-slate-50/80 p-4">
             <Input type="file" multiple onChange={(event) => setSelectedFiles(Array.from(event.target.files || []))} />
-            <p className="mt-2 text-xs leading-6 text-slate-500">يقبل النظام جميع أنواع الملفات، ويتم حفظ أسماء الملفات داخل سجل الشاهد.</p>
+            <p className="mt-2 text-xs leading-6 text-slate-500">
+              يقبل النظام جميع أنواع الملفات، ويتم حفظ أسماء الملفات داخل سجل الشاهد.
+            </p>
             {attachmentNames.length > 0 ? (
               <div className="mt-3 flex flex-wrap gap-2">
                 {attachmentNames.map((name) => (
@@ -187,8 +195,9 @@ export function EvidenceForm({
           </div>
         </Field>
       </div>
+
       <div className="md:col-span-2">
-        <Button onClick={handleSubmit} disabled={isSubmitting}>
+        <Button onClick={handleSubmit} disabled={isSubmitting} className="w-full rounded-2xl sm:w-auto">
           {isSubmitting ? "جاري الحفظ..." : "حفظ الشاهد"}
         </Button>
       </div>
@@ -199,7 +208,7 @@ export function EvidenceForm({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-semibold text-slate-700">{label}</label>
+      <label className="text-sm font-bold text-slate-700">{label}</label>
       {children}
     </div>
   );

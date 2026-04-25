@@ -33,20 +33,19 @@ export default async function EvidencePage() {
 
   return (
     <DashboardShell>
-      <section className="space-y-6">
+      <section className="space-y-5 sm:space-y-6">
         {!data.isDatabaseReady ? <DatabaseAlert /> : null}
 
-        <div className="overflow-hidden rounded-[32px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(244,248,249,0.94)_55%,rgba(250,246,238,0.98)_100%)] p-6 shadow-soft">
-          <h1 className="section-title text-3xl font-bold">إدارة الأدلة والشواهد</h1>
+        <div className="overflow-hidden rounded-[34px] border border-white/80 bg-[linear-gradient(145deg,rgba(255,255,255,0.98)_0%,rgba(245,248,249,0.96)_55%,rgba(252,246,238,0.98)_100%)] p-5 shadow-soft sm:p-6">
+          <h1 className="section-title text-2xl font-black sm:text-3xl">إدارة الأدلة والشواهد</h1>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-600">
-            أضف الشواهد واربطها بالمعلمين أو التقييمات أو عناصر المدير أو الأرشيف العام. يدعم النظام الآن
-            رفع الملفات فعليًا وإظهارها كرابط يمكن فتحه مباشرة من سجل الأدلة.
+            أضف الشواهد واربطها بالمعلمين أو التقييمات أو عناصر المدير أو الأرشيف العام، مع تجربة أسهل على الجوال.
           </p>
         </div>
 
         <Card className="border-white/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] shadow-soft">
           <CardHeader>
-            <CardTitle>إضافة شاهد جديد</CardTitle>
+            <CardTitle className="font-black">إضافة شاهد جديد</CardTitle>
           </CardHeader>
           <CardContent>
             <EvidenceForm
@@ -59,7 +58,7 @@ export default async function EvidencePage() {
 
         <Card className="border-white/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] shadow-soft">
           <CardHeader>
-            <CardTitle>سجل الأدلة</CardTitle>
+            <CardTitle className="font-black">سجل الأدلة</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {data.evidences.length === 0 ? (
@@ -69,9 +68,9 @@ export default async function EvidencePage() {
             ) : (
               data.evidences.map((item) => (
                 <div key={item.id} className="rounded-[28px] border border-slate-200/80 bg-slate-50/70 p-5">
-                  <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="space-y-2">
-                      <h3 className="text-lg font-bold text-slate-900">{item.title}</h3>
+                      <h3 className="text-lg font-black text-slate-900">{item.title}</h3>
                       <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
                         <span>{item.evidenceType}</span>
                         <span>•</span>
@@ -92,7 +91,7 @@ export default async function EvidencePage() {
                           href={attachment}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
+                          className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-100"
                         >
                           {getAttachmentLabel(attachment)}
                         </a>

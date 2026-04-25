@@ -47,7 +47,7 @@ export default async function DashboardPage() {
     {
       title: "متوسط الأداء",
       value: `${formatScore(dashboard.metrics.averageTeacherPerformance)} / 5`,
-      subtitle: "متوسط نتائج المعلمين الحالية",
+      subtitle: "نتيجة الأداء الحالية",
       icon: TrendingUp,
       href: "/dashboard/evaluations",
       accent: "from-amber-500/15 to-amber-500/5 text-amber-700",
@@ -55,7 +55,7 @@ export default async function DashboardPage() {
     {
       title: "اكتمال عناصر المدير",
       value: `${formatScore(dashboard.metrics.managerCompletionRate)}%`,
-      subtitle: "نسبة التقدم في عناصر المدير",
+      subtitle: "نسبة التقدم الحالية",
       icon: BookOpenCheck,
       href: "/dashboard/manager-elements",
       accent: "from-violet-500/15 to-violet-500/5 text-violet-700",
@@ -63,7 +63,7 @@ export default async function DashboardPage() {
     {
       title: "الأدلة المرفوعة",
       value: String(dashboard.metrics.totalEvidences),
-      subtitle: "الشواهد المرتبطة بالمعلمين والإدارة",
+      subtitle: "الشواهد والوثائق",
       icon: FileArchive,
       href: "/dashboard/evidence",
       accent: "from-cyan-500/15 to-cyan-500/5 text-cyan-700",
@@ -71,79 +71,92 @@ export default async function DashboardPage() {
     {
       title: "التقارير الجاهزة",
       value: String(dashboard.metrics.readyReportsCount),
-      subtitle: "تقارير قابلة للعرض والطباعة",
+      subtitle: "قابلة للعرض والطباعة",
       icon: FileClock,
       href: "/dashboard/reports",
       accent: "from-rose-500/15 to-rose-500/5 text-rose-700",
     },
   ];
 
+  const teacherWithoutEvaluationCount = dashboard.teacherDirectory.filter((item) => item.evaluationsCount === 0).length;
+
   return (
     <DashboardShell>
-      <section className="space-y-6">
+      <section className="space-y-5 sm:space-y-6">
         {!dashboard.isDatabaseReady ? <DatabaseAlert /> : null}
 
-        <div className="overflow-hidden rounded-[32px] border border-white/80 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(244,248,249,0.94)_55%,rgba(250,246,238,0.98)_100%)] p-6 shadow-soft">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div className="space-y-2">
-              <p className="text-sm font-semibold text-primary">لوحة القيادة التنفيذية</p>
-              <h1 className="section-title text-3xl font-bold">مرحبًا بك في منصة إنجاز التعليمية</h1>
+        <div className="overflow-hidden rounded-[34px] border border-white/80 bg-[linear-gradient(145deg,rgba(255,255,255,0.98)_0%,rgba(245,248,249,0.96)_55%,rgba(252,246,238,0.98)_100%)] p-5 shadow-soft sm:p-6">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div className="space-y-2">
+                <p className="text-xs font-black tracking-[0.18em] text-primary/75">DASHBOARD</p>
+                <h1 className="section-title text-2xl font-black sm:text-3xl">لوحة القيادة التنفيذية</h1>
+                <p className="max-w-3xl text-sm leading-7 text-slate-600">
+                  متابعة سريعة للتقييمات والشواهد وعناصر المدير والتقارير ضمن تجربة تشغيل مريحة على الجوال.
+                </p>
+              </div>
+
+              <Link
+                href="/dashboard/settings"
+                className="block rounded-[24px] border border-[#d8e3e7] bg-white/85 px-4 py-4 text-sm text-[#15445a] shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md sm:max-w-xs"
+              >
+                <div className="mb-2 flex items-center gap-2 font-black">
+                  <School className="h-4 w-4" />
+                  بيانات المدرسة
+                </div>
+                <p>{session.user.schoolName}</p>
+                <p>{session.user.educationOffice}</p>
+                <p>{session.user.academicYear}</p>
+                <div className="mt-3 flex items-center gap-2 text-xs font-bold text-primary">
+                  <Settings className="h-3.5 w-3.5" />
+                  فتح الإعدادات
+                </div>
+              </Link>
             </div>
 
-            <Link
-              href="/dashboard/settings"
-              className="block rounded-[24px] border border-[#d8e3e7] bg-white/80 px-5 py-4 text-sm text-[#15445a] shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
-            >
-              <div className="mb-2 flex items-center gap-2 font-bold">
-                <School className="h-4 w-4" />
-                بيانات المدرسة
-              </div>
-              <p>{session.user.schoolName}</p>
-              <p>{session.user.educationOffice}</p>
-              <p>{session.user.academicYear}</p>
-              <div className="mt-3 flex items-center gap-2 text-xs font-semibold text-primary">
-                <Settings className="h-3.5 w-3.5" />
-                فتح الإعدادات
-              </div>
-            </Link>
+            <div className="grid grid-cols-3 gap-3">
+              <QuickStat title="المعلمون" value={String(dashboard.metrics.totalTeachers)} />
+              <QuickStat title="التقييمات" value={String(dashboard.metrics.totalEvaluations)} />
+              <QuickStat title="الأدلة" value={String(dashboard.metrics.totalEvidences)} />
+            </div>
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {cards.map((card) => {
-            const Icon = card.icon;
-            return (
-              <Link key={card.title} href={card.href} className="block">
-                <Card className="h-full border-white/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] shadow-soft transition duration-200 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(15,23,42,0.14)]">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                    <div>
-                      <CardTitle className="text-base">{card.title}</CardTitle>
-                      <p className="mt-1 text-sm text-slate-500">{card.subtitle}</p>
-                    </div>
-                    <div
-                      className={`flex h-12 w-12 items-center justify-center rounded-[18px] bg-gradient-to-b ${card.accent}`}
-                    >
-                      <Icon className="h-5 w-5" />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="flex items-end justify-between gap-3">
-                    <p className="text-3xl font-bold text-slate-900">{card.value}</p>
-                    <span className="text-sm font-semibold text-primary">فتح القسم</span>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
+        <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+          <div className="flex gap-3 sm:grid sm:grid-cols-2 xl:grid-cols-3">
+            {cards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <Link key={card.title} href={card.href} className="block min-w-[250px] sm:min-w-0">
+                  <Card className="h-full border-white/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] shadow-soft transition duration-200 hover:-translate-y-1 hover:shadow-[0_22px_55px_rgba(15,23,42,0.14)]">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                      <div>
+                        <CardTitle className="text-base font-black">{card.title}</CardTitle>
+                        <p className="mt-1 text-sm text-slate-500">{card.subtitle}</p>
+                      </div>
+                      <div className={`flex h-12 w-12 items-center justify-center rounded-[18px] bg-gradient-to-b ${card.accent}`}>
+                        <Icon className="h-5 w-5" />
+                      </div>
+                    </CardHeader>
+                    <CardContent className="flex items-end justify-between gap-3">
+                      <p className="text-3xl font-black text-slate-900">{card.value}</p>
+                      <span className="text-sm font-bold text-primary">فتح</span>
+                    </CardContent>
+                  </Card>
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <Card className="border-white/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] shadow-soft">
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <CardTitle>آخر التقييمات</CardTitle>
+                <CardTitle className="font-black">آخر التقييمات</CardTitle>
                 <p className="mt-1 text-sm text-slate-500">عرض سريع لأحدث الزيارات الصفية المسجلة.</p>
               </div>
-              <Button asChild variant="secondary" className="rounded-2xl">
+              <Button asChild variant="secondary" className="rounded-2xl sm:w-auto">
                 <Link href="/dashboard/evaluations">
                   كل التقييمات
                   <ArrowLeft className="mr-2 h-4 w-4" />
@@ -160,14 +173,14 @@ export default async function DashboardPage() {
                     href={`/dashboard/reports/${evaluation.id}`}
                     className="block rounded-3xl border border-slate-100 p-4 transition hover:bg-slate-50"
                   >
-                    <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <h3 className="font-bold">{evaluation.teacherName}</h3>
+                        <h3 className="font-black text-slate-900">{evaluation.teacherName}</h3>
                         <p className="text-sm text-slate-500">{formatDate(evaluation.visitDate)}</p>
                       </div>
-                      <div className="text-left">
-                        <p className="text-xl font-bold text-primary">{formatScore(evaluation.finalScore)} / 5</p>
+                      <div className="flex items-center gap-3">
                         <Badge variant="secondary">{evaluation.performanceLabel}</Badge>
+                        <p className="text-lg font-black text-primary">{formatScore(evaluation.finalScore)} / 5</p>
                       </div>
                     </div>
                   </Link>
@@ -178,7 +191,7 @@ export default async function DashboardPage() {
 
           <Card className="border-white/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] shadow-soft">
             <CardHeader>
-              <CardTitle>إجراءات سريعة</CardTitle>
+              <CardTitle className="font-black">إجراءات سريعة</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3">
               <QuickLink
@@ -196,7 +209,7 @@ export default async function DashboardPage() {
               <QuickLink
                 href="/dashboard/reports"
                 title="استعراض التقارير"
-                description="مراجعة التقارير النهائية وطباعة التقارير الجاهزة."
+                description="مراجعة التقارير النهائية وفتحها وطباعة الجاهز منها."
                 icon={<FolderKanban className="h-5 w-5" />}
               />
             </CardContent>
@@ -204,9 +217,9 @@ export default async function DashboardPage() {
         </div>
 
         <Card className="border-white/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] shadow-soft">
-          <CardHeader className="flex flex-row items-center justify-between gap-4">
+          <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <CardTitle>منحنى الأداء الأخير</CardTitle>
+              <CardTitle className="font-black">منحنى الأداء الأخير</CardTitle>
               <p className="mt-1 text-sm text-slate-500">يعرض آخر ست نتائج تقييم مسجلة على مقياس من 5.</p>
             </div>
             <Button asChild variant="outline" className="rounded-2xl">
@@ -224,10 +237,10 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+        <div className="grid gap-6 xl:grid-cols-[0.92fr_1.08fr]">
           <Card className="border-white/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] shadow-soft">
-            <CardHeader className="flex flex-row items-center justify-between gap-4">
-              <CardTitle>آخر الأدلة</CardTitle>
+            <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <CardTitle className="font-black">آخر الأدلة</CardTitle>
               <Button asChild variant="outline" className="rounded-2xl">
                 <Link href="/dashboard/evidence">كل الأدلة</Link>
               </Button>
@@ -242,14 +255,14 @@ export default async function DashboardPage() {
                     href="/dashboard/evidence"
                     className="block rounded-3xl border border-slate-100 p-4 transition hover:bg-slate-50"
                   >
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <h3 className="font-bold">{evidence.title}</h3>
+                        <h3 className="font-black text-slate-900">{evidence.title}</h3>
                         <p className="text-sm text-slate-500">{evidence.evidenceType}</p>
+                        <p className="mt-1 text-xs text-slate-400">{formatDate(evidence.evidenceDate)}</p>
                       </div>
                       <Badge variant="secondary">{getEvidenceStatusLabel(evidence.status)}</Badge>
                     </div>
-                    <p className="mt-2 text-xs text-slate-400">{formatDate(evidence.evidenceDate)}</p>
                   </Link>
                 ))
               )}
@@ -259,13 +272,13 @@ export default async function DashboardPage() {
           <div className="grid gap-6">
             <Card className="border-white/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] shadow-soft">
               <CardHeader>
-                <CardTitle>تنبيهات تشغيلية</CardTitle>
+                <CardTitle className="font-black">تنبيهات تشغيلية</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="grid gap-3">
                 <AlertRow
                   href="/dashboard/teachers"
                   title="المعلمون دون تقييمات"
-                  description={`${dashboard.teacherDirectory.filter((item) => item.evaluationsCount === 0).length} معلم بحاجة إلى أول زيارة.`}
+                  description={`${teacherWithoutEvaluationCount} معلم بحاجة إلى أول زيارة.`}
                 />
                 <AlertRow
                   href="/dashboard/manager-elements"
@@ -275,14 +288,14 @@ export default async function DashboardPage() {
                 <AlertRow
                   href="/dashboard/reports"
                   title="جاهزية التقارير"
-                  description={`${dashboard.metrics.readyReportsCount} تقارير قابلة للعرض والطباعة من السجلات الحالية.`}
+                  description={`${dashboard.metrics.readyReportsCount} تقارير قابلة للعرض والطباعة.`}
                 />
               </CardContent>
             </Card>
 
             <Card className="border-white/80 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] shadow-soft">
-              <CardHeader className="flex flex-row items-center justify-between gap-4">
-                <CardTitle>عناصر المدير التي تحتاج متابعة</CardTitle>
+              <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <CardTitle className="font-black">عناصر المدير التي تحتاج متابعة</CardTitle>
                 <Button asChild variant="outline" className="rounded-2xl">
                   <Link href="/dashboard/manager-elements">كل العناصر</Link>
                 </Button>
@@ -297,11 +310,11 @@ export default async function DashboardPage() {
                       href={`/dashboard/manager-elements/${item.id}`}
                       className="block rounded-3xl border border-slate-100 p-4 transition hover:bg-slate-50"
                     >
-                      <div className="mb-1 flex items-center gap-2 text-amber-700">
+                      <div className="mb-2 flex items-center gap-2 text-amber-700">
                         <AlertCircle className="h-4 w-4" />
-                        <span className="text-sm font-bold">بحاجة إلى متابعة</span>
+                        <span className="text-sm font-black">بحاجة إلى متابعة</span>
                       </div>
-                      <h3 className="font-bold">{item.elementTitle}</h3>
+                      <h3 className="font-black text-slate-900">{item.elementTitle}</h3>
                       <p className="text-sm text-slate-500">آخر تحديث: {formatDate(item.updatedAt)}</p>
                     </Link>
                   ))
@@ -312,6 +325,15 @@ export default async function DashboardPage() {
         </div>
       </section>
     </DashboardShell>
+  );
+}
+
+function QuickStat({ title, value }: { title: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-white/85 bg-white/88 px-4 py-3 text-center shadow-sm">
+      <p className="text-lg font-black text-slate-900">{value}</p>
+      <p className="text-xs font-bold text-slate-500">{title}</p>
+    </div>
   );
 }
 
@@ -326,7 +348,7 @@ function EmptyState({ text }: { text: string }) {
 function AlertRow({ href, title, description }: { href: string; title: string; description: string }) {
   return (
     <Link href={href} className="block rounded-3xl border border-slate-100 p-4 transition hover:bg-slate-50">
-      <h3 className="font-bold">{title}</h3>
+      <h3 className="font-black text-slate-900">{title}</h3>
       <p className="mt-1 text-sm leading-7 text-slate-500">{description}</p>
     </Link>
   );
@@ -351,7 +373,7 @@ function QuickLink({
       <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
         {icon}
       </div>
-      <h3 className="font-bold">{title}</h3>
+      <h3 className="font-black text-slate-900">{title}</h3>
       <p className="mt-1 text-sm leading-7 text-slate-500">{description}</p>
     </Link>
   );
