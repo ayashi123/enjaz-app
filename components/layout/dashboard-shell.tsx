@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   ClipboardList,
+  ClipboardPenLine,
   FileArchive,
   FileText,
   Home,
@@ -24,6 +25,7 @@ const navItems = [
   { href: "/dashboard/teachers", label: "المعلمون", icon: Users },
   { href: "/dashboard/manager-elements", label: "عناصر المدير", icon: ShieldCheck },
   { href: "/dashboard/evidence", label: "الأدلة", icon: FileArchive },
+  { href: "/dashboard/external-evaluation", label: "التقويم الخارجي", icon: ClipboardPenLine },
   { href: "/dashboard/evaluations", label: "التقييمات", icon: ClipboardList },
   { href: "/dashboard/reports", label: "التقارير", icon: FileText },
   { href: "/dashboard/settings", label: "الإعدادات", icon: Settings },
@@ -46,7 +48,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
               <div className="space-y-1">
                 <p className="text-sm font-semibold text-primary">منصة إنجاز التعليمية</p>
                 <p className="max-w-[220px] text-xs leading-6 text-slate-500 sm:max-w-none sm:text-sm">
-                  لوحة تشغيل عربية لإدارة الأداء التعليمي والملفات المدرسية
+                  لوحة تشغيل لإدارة الأداء التعليمي والملفات المدرسية
                 </p>
               </div>
               <div className="flex items-center gap-2 sm:gap-3">
@@ -117,7 +119,7 @@ function Sidebar({
               : "border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.11)_0%,rgba(255,255,255,0.04)_100%)] shadow-panel",
           )}
         >
-          <p className={cn("text-xs font-semibold", mobile ? "text-primary" : "text-[#d6e8ef]")}>التنقل السريع</p>
+          <p className={cn("text-xs font-semibold", mobile ? "text-primary" : "text-[#d6e8ef]")}>لوحة التحكم</p>
           <h2 className={cn("mt-2 text-xl font-bold", mobile ? "text-slate-900" : "text-white")}>إدارة المدرسة والأداء</h2>
         </div>
         <nav className={cn("space-y-2", mobile && "grid grid-cols-2 gap-2 space-y-0")}>

@@ -14,7 +14,7 @@ export default async function RegisterPage() {
   return (
     <AuthShell
       title="إنشاء حساب مدير المدرسة"
-      description="ابدأ إعداد منصة إنجاز التعليمية عبر إنشاء ملف القائد والمدرسة والبيانات الأساسية للعام الدراسي."
+      description="ابدأ إعداد منصة إنجاز التعليمية عبر إنشاء ملف المدير والمدرسة والبيانات الأساسية للعام الدراسي."
       footerText="لديك حساب بالفعل؟"
       footerLink="/login"
       footerLinkLabel="تسجيل الدخول"

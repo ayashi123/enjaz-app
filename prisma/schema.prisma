@@ -20,6 +20,12 @@ enum EvidenceStatus {
   ARCHIVED
 }
 
+enum ExternalEvaluationIndicatorStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+}
+
 model User {
   id                     String                   @id @default(cuid())
   fullName               String
@@ -33,6 +39,7 @@ model User {
   evaluations            TeacherEvaluation[]
   evidences              Evidence[]
   managerElementProgress ManagerElementProgress[]
+  externalIndicators     ExternalEvaluationIndicatorProgress[]
   schoolSettings         SchoolSettings?
 }
 
@@ -104,4 +111,34 @@ model SchoolSettings {
   printHeader           String?
   createdAt             DateTime @default(now())
   user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ExternalEvaluationIndicatorProgress {
+  id            String                           @id @default(cuid())
+  userId        String
+  domainId      String
+  domainTitle   String
+  standardId    String
+  standardTitle String
+  indicatorCode String
+  indicatorText String
+  status        ExternalEvaluationIndicatorStatus @default(NOT_STARTED)
+  notes         String?
+  createdAt     DateTime                         @default(now())
+  updatedAt     DateTime                         @updatedAt
+  user          User                             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  evidences     ExternalEvaluationIndicatorEvidence[]
+
+  @@unique([userId, indicatorCode])
+}
+
+model ExternalEvaluationIndicatorEvidence {
+  id         String                             @id @default(cuid())
+  progressId String
+  title      String
+  fileUrl    String?
+  linkUrl    String?
+  note       String?
+  createdAt  DateTime                           @default(now())
+  progress   ExternalEvaluationIndicatorProgress @relation(fields: [progressId], references: [id], onDelete: Cascade)
 }

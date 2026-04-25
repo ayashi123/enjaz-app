@@ -61,7 +61,7 @@ export function RegisterForm() {
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">
-        <Field label="اسم المدير / القائد" error={form.formState.errors.fullName?.message}>
+        <Field label="اسم المدير" error={form.formState.errors.fullName?.message}>
           <Input placeholder="أ. أحمد محمد" {...form.register("fullName")} />
         </Field>
         <Field label="البريد الإلكتروني" error={form.formState.errors.email?.message}>

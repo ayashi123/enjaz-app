@@ -46,7 +46,7 @@ export function SettingsForm({
     <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
       <Card className="border-white/80 bg-white/90 shadow-soft">
         <CardHeader>
-          <CardTitle>ملف القائد والمدرسة</CardTitle>
+          <CardTitle>ملف المدير والمدرسة</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm leading-7 text-slate-600">
           <p>اسم مدير المدرسة: {user?.fullName || "-"}</p>

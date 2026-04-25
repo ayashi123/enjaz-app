@@ -1,4 +1,10 @@
 import { Prisma } from "@prisma/client";
+import {
+  externalEvaluationDefaultTools,
+  getAllExternalEvaluationIndicators,
+  getExternalEvaluationDomain,
+  externalEvaluationDomains,
+} from "@/data/external-evaluation";
 import { getManagerElementDefinition, managerElementsCatalog } from "@/data/manager-elements";
 import { prisma } from "@/lib/db";
 
@@ -52,6 +58,54 @@ export async function ensureManagerElements(userId: string) {
           userId,
           elementTitle: title,
           isDone: false,
+        })),
+      });
+    }
+  } catch (error) {
+    if (!isPrismaConnectionError(error)) throw error;
+  }
+}
+
+export async function ensureExternalEvaluationIndicators(userId: string) {
+  try {
+    const definitions = getAllExternalEvaluationIndicators();
+    const validCodes = new Set(definitions.map((item) => item.indicatorCode));
+    const existing = await prisma.externalEvaluationIndicatorProgress.findMany({
+      where: { userId },
+      select: { id: true, indicatorCode: true, updatedAt: true },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    const seenCodes = new Set<string>();
+    const staleIds: string[] = [];
+
+    for (const item of existing) {
+      if (!validCodes.has(item.indicatorCode) || seenCodes.has(item.indicatorCode)) {
+        staleIds.push(item.id);
+        continue;
+      }
+
+      seenCodes.add(item.indicatorCode);
+    }
+
+    const missing = definitions.filter((item) => !seenCodes.has(item.indicatorCode));
+
+    if (staleIds.length > 0) {
+      await prisma.externalEvaluationIndicatorProgress.deleteMany({
+        where: { userId, id: { in: staleIds } },
+      });
+    }
+
+    if (missing.length > 0) {
+      await prisma.externalEvaluationIndicatorProgress.createMany({
+        data: missing.map((item) => ({
+          userId,
+          domainId: item.domainId,
+          domainTitle: item.domainTitle,
+          standardId: item.standardId,
+          standardTitle: item.standardTitle,
+          indicatorCode: item.indicatorCode,
+          indicatorText: item.indicatorText,
         })),
       });
     }
@@ -629,6 +683,161 @@ export async function getSettingsData(userId: string) {
     return { isDatabaseReady: true, user, settings };
   } catch (error) {
     if (isPrismaConnectionError(error)) return { isDatabaseReady: false, user: null, settings: null };
+    throw error;
+  }
+}
+
+export async function getExternalEvaluationOverviewData(userId: string) {
+  try {
+    await ensureExternalEvaluationIndicators(userId);
+
+    const progress = await prisma.externalEvaluationIndicatorProgress.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        domainId: true,
+        standardId: true,
+        status: true,
+        evidences: { select: { id: true } },
+      },
+    });
+
+    const domains = externalEvaluationDomains.map((domain) => {
+      const standards = domain.standards;
+      const standardIds = new Set(standards.map((item) => item.id));
+      const domainProgress = progress.filter((item) => item.domainId === domain.id);
+      const indicatorCount = domainProgress.length;
+      const completedCount = domainProgress.filter((item) => item.status === "COMPLETED").length;
+      const evidenceCount = domainProgress.reduce((sum, item) => sum + item.evidences.length, 0);
+      const standardsSummary = standards.map((standard) => {
+        const standardProgress = domainProgress.filter((item) => item.standardId === standard.id);
+        const standardIndicatorsCount = standardProgress.length;
+        const standardCompleted = standardProgress.filter((item) => item.status === "COMPLETED").length;
+
+        return {
+          id: standard.id,
+          title: standard.title,
+          indicatorsCount: standardIndicatorsCount,
+          completedCount: standardCompleted,
+          completionRate:
+            standardIndicatorsCount > 0 ? Math.round((standardCompleted / standardIndicatorsCount) * 100) : 0,
+        };
+      });
+
+      return {
+        id: domain.id,
+        title: domain.title,
+        description: domain.description,
+        standardsCount: standardIds.size,
+        indicatorsCount: indicatorCount,
+        completedIndicatorsCount: completedCount,
+        evidenceCount,
+        completionRate: indicatorCount > 0 ? Math.round((completedCount / indicatorCount) * 100) : 0,
+        standards: standardsSummary,
+      };
+    });
+
+    return {
+      isDatabaseReady: true,
+      domains,
+      totals: {
+        standardsCount: domains.reduce((sum, item) => sum + item.standardsCount, 0),
+        indicatorsCount: domains.reduce((sum, item) => sum + item.indicatorsCount, 0),
+        completedIndicatorsCount: domains.reduce((sum, item) => sum + item.completedIndicatorsCount, 0),
+        evidencesCount: domains.reduce((sum, item) => sum + item.evidenceCount, 0),
+      },
+    };
+  } catch (error) {
+    if (isPrismaConnectionError(error)) {
+      return {
+        isDatabaseReady: false,
+        domains: [],
+        totals: { standardsCount: 0, indicatorsCount: 0, completedIndicatorsCount: 0, evidencesCount: 0 },
+      };
+    }
+    throw error;
+  }
+}
+
+export async function getExternalEvaluationDomainData(userId: string, domainId: string) {
+  try {
+    await ensureExternalEvaluationIndicators(userId);
+    const domain = getExternalEvaluationDomain(domainId);
+
+    if (!domain) {
+      return { isDatabaseReady: true, domain: null, standards: [], domainSummary: null };
+    }
+
+    const progress = await prisma.externalEvaluationIndicatorProgress.findMany({
+      where: { userId, domainId },
+      include: {
+        evidences: {
+          orderBy: { createdAt: "desc" },
+        },
+      },
+      orderBy: { indicatorCode: "asc" },
+    });
+
+    const standards = domain.standards.map((standard) => {
+      const indicators = standard.indicators.map((indicator) => {
+        const record = progress.find((item) => item.indicatorCode === indicator.code);
+        const evidenceCount = record?.evidences.length || 0;
+
+        return {
+          code: indicator.code,
+          text: indicator.text,
+          tools: indicator.tools ?? [...externalEvaluationDefaultTools],
+          guidance: indicator.guidance,
+          status: record?.status || "NOT_STARTED",
+          notes: record?.notes || "",
+          progressId: record?.id || "",
+          evidences:
+            record?.evidences.map((evidence) => ({
+              id: evidence.id,
+              title: evidence.title,
+              fileUrl: evidence.fileUrl,
+              linkUrl: evidence.linkUrl,
+              note: evidence.note,
+              createdAt: evidence.createdAt,
+            })) || [],
+          evidenceCount,
+        };
+      });
+
+      const completedIndicators = indicators.filter((item) => item.status === "COMPLETED").length;
+
+      return {
+        id: standard.id,
+        title: standard.title,
+        summaryGuidance: standard.summaryGuidance || [],
+        indicators,
+        indicatorsCount: indicators.length,
+        completedIndicators,
+        evidencesCount: indicators.reduce((sum, item) => sum + item.evidenceCount, 0),
+        completionRate: indicators.length > 0 ? Math.round((completedIndicators / indicators.length) * 100) : 0,
+      };
+    });
+
+    const domainIndicatorsCount = standards.reduce((sum, item) => sum + item.indicatorsCount, 0);
+    const domainCompletedIndicators = standards.reduce((sum, item) => sum + item.completedIndicators, 0);
+    const domainEvidencesCount = standards.reduce((sum, item) => sum + item.evidencesCount, 0);
+
+    return {
+      isDatabaseReady: true,
+      domain,
+      standards,
+      domainSummary: {
+        indicatorsCount: domainIndicatorsCount,
+        completedIndicators: domainCompletedIndicators,
+        evidencesCount: domainEvidencesCount,
+        completionRate:
+          domainIndicatorsCount > 0 ? Math.round((domainCompletedIndicators / domainIndicatorsCount) * 100) : 0,
+      },
+    };
+  } catch (error) {
+    if (isPrismaConnectionError(error)) {
+      return { isDatabaseReady: false, domain: null, standards: [], domainSummary: null };
+    }
     throw error;
   }
 }

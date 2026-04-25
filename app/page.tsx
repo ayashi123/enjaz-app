@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const features = [
   {
     title: "إدارة مدرسية متكاملة",
-    description: "ملفات المدرسة والقائد والكوادر التعليمية في مساحة واحدة واضحة وآمنة.",
+    description: "ملفات المدرسة والمدير والكوادر التعليمية في مساحة واحدة واضحة وآمنة.",
     icon: Building2,
   },
   {
@@ -33,7 +33,7 @@ export default function LandingPage() {
         <header className="glass-panel mb-8 flex flex-col gap-4 rounded-[28px] px-5 py-4 sm:mb-10 sm:flex-row sm:items-center sm:justify-between sm:rounded-full sm:py-3">
           <div>
             <p className="text-xs font-semibold text-primary">منصة إنجاز التعليمية</p>
-            <p className="text-sm text-muted-foreground">نظام عربي لإدارة الأداء التعليمي وقيادة المدرسة</p>
+            <p className="text-sm text-muted-foreground">نظام للإدارة المدرسة</p>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:flex">
             <Button asChild variant="ghost" className="rounded-2xl border border-[#dfe7e9] bg-white/70">
@@ -49,12 +49,9 @@ export default function LandingPage() {
           <div className="space-y-8">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/10 bg-white/85 px-4 py-2 text-sm font-semibold text-primary shadow-sm">
               <Sparkles className="h-4 w-4" />
-              بيئة عمل مصممة لقادة المدارس والوكلاء
+              بيئة عمل مصممة لمديري المدارس والوكلاء
             </div>
             <div className="space-y-5">
-              <h1 className="section-title max-w-3xl text-3xl font-bold leading-[1.45] sm:text-5xl">
-                إدارة تقييمات المعلمين والأدلة والتقارير الرسمية بمنصة عربية هادئة واحترافية.
-              </h1>
               <p className="max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
                 صممت منصة إنجاز التعليمية لتجمع بين التتبع التنفيذي، المتابعة الصفية، إدارة الشواهد، وحوكمة الأداء في
                 تجربة رقمية مرنة تناسب الهاتف واللوحي وسطح المكتب.
