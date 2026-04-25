@@ -29,17 +29,17 @@ const features = [
 export default function LandingPage() {
   return (
     <main className="min-h-screen">
-      <section className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-8 sm:px-6 lg:px-8">
-        <header className="glass-panel mb-10 flex items-center justify-between rounded-full px-5 py-3">
+      <section className="mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <header className="glass-panel mb-8 flex flex-col gap-4 rounded-[28px] px-5 py-4 sm:mb-10 sm:flex-row sm:items-center sm:justify-between sm:rounded-full sm:py-3">
           <div>
             <p className="text-xs font-semibold text-primary">منصة إنجاز التعليمية</p>
             <p className="text-sm text-muted-foreground">نظام عربي لإدارة الأداء التعليمي وقيادة المدرسة</p>
           </div>
-          <div className="flex gap-3">
-            <Button asChild variant="ghost">
+          <div className="grid grid-cols-2 gap-3 sm:flex">
+            <Button asChild variant="ghost" className="rounded-2xl border border-[#dfe7e9] bg-white/70">
               <Link href="/login">تسجيل الدخول</Link>
             </Button>
-            <Button asChild>
+            <Button asChild className="rounded-2xl">
               <Link href="/register">إنشاء حساب</Link>
             </Button>
           </div>
@@ -52,15 +52,15 @@ export default function LandingPage() {
               بيئة عمل مصممة لقادة المدارس والوكلاء
             </div>
             <div className="space-y-5">
-              <h1 className="section-title max-w-3xl text-4xl font-bold leading-[1.35] sm:text-5xl">
+              <h1 className="section-title max-w-3xl text-3xl font-bold leading-[1.45] sm:text-5xl">
                 إدارة تقييمات المعلمين والأدلة والتقارير الرسمية بمنصة عربية هادئة واحترافية.
               </h1>
-              <p className="max-w-2xl text-lg leading-8 text-slate-600">
+              <p className="max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
                 صممت منصة إنجاز التعليمية لتجمع بين التتبع التنفيذي، المتابعة الصفية، إدارة الشواهد، وحوكمة الأداء في
                 تجربة رقمية مرنة تناسب الهاتف واللوحي وسطح المكتب.
               </p>
             </div>
-            <div className="flex flex-wrap gap-4">
+            <div className="grid gap-3 sm:flex sm:flex-wrap">
               <Button asChild size="lg" className="rounded-2xl">
                 <Link href="/register">
                   ابدأ المنصة الآن
@@ -73,17 +73,17 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <Card className="overflow-hidden border-white/70 bg-white/90 shadow-soft">
+          <Card className="overflow-hidden border-white/70 bg-white/92 shadow-soft">
             <CardHeader className="border-b border-[#dde7ea] bg-[linear-gradient(135deg,#eff5f6_0%,#f9f3e6_100%)]">
               <CardTitle className="text-xl font-bold">ملامح النسخة الإنتاجية</CardTitle>
             </CardHeader>
-            <CardContent className="grid gap-4 p-6">
+            <CardContent className="grid gap-4 p-5 sm:p-6">
               {features.map((feature) => {
                 const Icon = feature.icon;
                 return (
                   <div
                     key={feature.title}
-                    className="rounded-[22px] border border-slate-100 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] p-5 shadow-sm transition-transform hover:-translate-y-1"
+                    className="rounded-[22px] border border-slate-100 bg-[linear-gradient(180deg,#ffffff_0%,#fbfcfc_100%)] p-4 shadow-sm transition-transform hover:-translate-y-1 sm:p-5"
                   >
                     <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                       <Icon className="h-5 w-5" />

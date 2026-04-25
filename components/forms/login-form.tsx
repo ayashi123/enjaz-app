@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { LoaderCircle, LogIn } from "lucide-react";
@@ -54,7 +55,9 @@ export function LoginForm() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-sm font-semibold text-slate-700">كلمة المرور</label>
-          <span className="text-xs text-slate-500">إعداد الاستعادة سيضاف في مرحلة لاحقة</span>
+          <Link href="/forgot-password" className="text-xs font-semibold text-primary hover:text-primary/80">
+            نسيت كلمة المرور؟
+          </Link>
         </div>
         <Input
           type="password"

@@ -88,10 +88,6 @@ export default async function DashboardPage() {
             <div className="space-y-2">
               <p className="text-sm font-semibold text-primary">لوحة القيادة التنفيذية</p>
               <h1 className="section-title text-3xl font-bold">مرحبًا بك في منصة إنجاز التعليمية</h1>
-              <p className="max-w-3xl text-sm leading-7 text-slate-600">
-                هذه الصفحة أصبحت نقطة تشغيل حقيقية: مؤشرات رئيسية، وآخر التقييمات، وأحدث الشواهد، وتنبيهات
-                تشغيلية، وروابط مباشرة إلى ملفات المعلمين والتقارير وعناصر المدير.
-              </p>
             </div>
 
             <Link
