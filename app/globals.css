@@ -10,6 +10,7 @@
 html {
   direction: rtl;
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -18,20 +19,7 @@ body {
     radial-gradient(circle at top, rgba(217, 191, 128, 0.18), transparent 24%),
     linear-gradient(180deg, rgba(245, 249, 249, 0.98) 0%, rgba(251, 248, 241, 1) 100%);
   min-height: 100vh;
-}
-
-@media (max-width: 640px) {
-  body {
-    background-image:
-      radial-gradient(circle at top, rgba(217, 191, 128, 0.14), transparent 20%),
-      linear-gradient(180deg, rgba(246, 249, 249, 0.98) 0%, rgba(252, 249, 243, 1) 100%);
-  }
-
-  body::before {
-    background-size: 20px 20px;
-    opacity: 0.28;
-    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.2), transparent 82%);
-  }
+  overscroll-behavior-y: contain;
 }
 
 body::before {
@@ -48,15 +36,29 @@ body::before {
   z-index: -1;
 }
 
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(21, 68, 90, 0.4) rgba(255, 255, 255, 0.2);
+@media (max-width: 640px) {
+  body {
+    background-image:
+      radial-gradient(circle at top, rgba(217, 191, 128, 0.14), transparent 18%),
+      linear-gradient(180deg, #f6faf9 0%, #fbf7f1 100%);
+  }
+
+  body::before {
+    background-size: 18px 18px;
+    opacity: 0.18;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.14), transparent 86%);
+  }
 }
 
 *,
 *::before,
 *::after {
   border-color: hsl(162 18% 84%);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(21, 68, 90, 0.4) rgba(255, 255, 255, 0.2);
 }
 
 ::-webkit-scrollbar {
