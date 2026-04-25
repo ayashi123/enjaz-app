@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { EvidenceRelationType, EvidenceStatus, PrismaClient, UserRole } from "@prisma/client";
+import { EvidenceRelationType, EvidenceStatus, PrismaClient, SubscriptionStatus, UserRole } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -18,6 +18,9 @@ async function main() {
     update: {
       role: UserRole.SCHOOL_MANAGER,
       isActive: true,
+      subscriptionStatus: SubscriptionStatus.ACTIVE,
+      subscriptionStart: new Date("2026-01-01"),
+      subscriptionEnd: new Date("2026-12-31"),
     },
     create: {
       fullName: "أ. سارة العتيبي",
@@ -25,6 +28,9 @@ async function main() {
       passwordHash,
       role: UserRole.SCHOOL_MANAGER,
       isActive: true,
+      subscriptionStatus: SubscriptionStatus.ACTIVE,
+      subscriptionStart: new Date("2026-01-01"),
+      subscriptionEnd: new Date("2026-12-31"),
       schoolName: "مدرسة إنجاز النموذجية",
       educationOffice: "مكتب تعليم شمال الرياض",
       academicYear: "1447 / 1448 هـ",
@@ -41,6 +47,7 @@ async function main() {
     update: {
       role: UserRole.SUPER_ADMIN,
       isActive: true,
+      subscriptionStatus: SubscriptionStatus.ACTIVE,
     },
     create: {
       fullName: "المشرف العام",
@@ -48,6 +55,7 @@ async function main() {
       passwordHash,
       role: UserRole.SUPER_ADMIN,
       isActive: true,
+      subscriptionStatus: SubscriptionStatus.ACTIVE,
       schoolName: "إدارة منصة إنجاز التعليمية",
       educationOffice: "الإشراف العام",
       academicYear: "1447 / 1448 هـ",
@@ -105,6 +113,40 @@ async function main() {
         evidenceDate: new Date(),
         notes: "ترتبط بمعلمة اللغة العربية.",
         attachments: ["support-plan.docx"],
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  const supportTicket = await prisma.supportTicket.upsert({
+    where: { id: "seed-support-ticket-1" },
+    update: {},
+    create: {
+      id: "seed-support-ticket-1",
+      userId: schoolManager.id,
+      subject: "تعذر رفع بعض الشواهد",
+      category: "تقني",
+      description: "تظهر رسالة فشل عند محاولة رفع الشاهد من صفحة الأدلة، ونحتاج دعمًا للتحقق من التخزين.",
+      status: "IN_PROGRESS",
+      priority: "HIGH",
+    },
+  });
+
+  await prisma.supportTicketReply.createMany({
+    data: [
+      {
+        ticketId: supportTicket.id,
+        authorId: schoolManager.id,
+        authorName: schoolManager.fullName,
+        isAdmin: false,
+        message: "المشكلة تظهر عند رفع ملف PDF من صفحة الشواهد.",
+      },
+      {
+        ticketId: supportTicket.id,
+        authorId: "system-admin-seed",
+        authorName: "المشرف العام",
+        isAdmin: true,
+        message: "تمت مراجعة الإعدادات، ونعمل على التحقق من الربط مع التخزين السحابي.",
       },
     ],
     skipDuplicates: true,

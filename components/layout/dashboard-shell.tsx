@@ -9,6 +9,7 @@ import {
   ClipboardPenLine,
   FileArchive,
   FileText,
+  Headset,
   Home,
   LogOut,
   Menu,
@@ -28,6 +29,7 @@ const navItems = [
   { href: "/dashboard/external-evaluation", label: "التقويم الخارجي", icon: ClipboardPenLine },
   { href: "/dashboard/evaluations", label: "التقييمات", icon: ClipboardList },
   { href: "/dashboard/reports", label: "التقارير", icon: FileText },
+  { href: "/dashboard/support", label: "الدعم الفني", icon: Headset },
   { href: "/dashboard/settings", label: "الإعدادات", icon: Settings },
 ];
 

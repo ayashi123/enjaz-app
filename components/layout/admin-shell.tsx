@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, LogOut, School, Users } from "lucide-react";
+import { Headset, LayoutDashboard, LogOut, School, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/admin", label: "لوحة المشرف", icon: LayoutDashboard },
   { href: "/admin/users", label: "إدارة الحسابات", icon: Users },
+  { href: "/admin/support", label: "الدعم الفني", icon: Headset },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {

@@ -844,7 +844,7 @@ export async function getExternalEvaluationDomainData(userId: string, domainId: 
 
 export async function getAdminOverviewData() {
   try {
-    const [users, activeUsers, schools, evaluations, evidences, recentUsers] = await Promise.all([
+    const [users, activeUsers, schools, evaluations, evidences, openTickets, recentUsers] = await Promise.all([
       prisma.user.count(),
       prisma.user.count({ where: { isActive: true } }),
       prisma.user.findMany({
@@ -853,6 +853,7 @@ export async function getAdminOverviewData() {
       }),
       prisma.teacherEvaluation.count(),
       prisma.evidence.count(),
+      prisma.supportTicket.count({ where: { status: { in: ["OPEN", "IN_PROGRESS"] } } }),
       prisma.user.findMany({
         select: {
           id: true,
@@ -861,6 +862,8 @@ export async function getAdminOverviewData() {
           schoolName: true,
           role: true,
           isActive: true,
+          subscriptionStatus: true,
+          subscriptionEnd: true,
           createdAt: true,
         },
         orderBy: { createdAt: "desc" },
@@ -876,6 +879,7 @@ export async function getAdminOverviewData() {
         totalSchools: schools.length,
         totalEvaluations: evaluations,
         totalEvidences: evidences,
+        openTickets,
       },
       recentUsers,
     };
@@ -889,6 +893,7 @@ export async function getAdminOverviewData() {
           totalSchools: 0,
           totalEvaluations: 0,
           totalEvidences: 0,
+          openTickets: 0,
         },
         recentUsers: [],
       };
@@ -909,6 +914,9 @@ export async function getAdminUsersData() {
         academicYear: true,
         role: true,
         isActive: true,
+        subscriptionStatus: true,
+        subscriptionStart: true,
+        subscriptionEnd: true,
         createdAt: true,
         _count: {
           select: {
@@ -928,6 +936,38 @@ export async function getAdminUsersData() {
   } catch (error) {
     if (isPrismaConnectionError(error)) {
       return { isDatabaseReady: false, users: [] };
+    }
+    throw error;
+  }
+}
+
+export async function getSupportTicketsData(userId?: string) {
+  try {
+    const where = userId ? { userId } : undefined;
+    const tickets = await prisma.supportTicket.findMany({
+      where,
+      include: {
+        user: {
+          select: {
+            fullName: true,
+            email: true,
+            schoolName: true,
+          },
+        },
+        replies: {
+          orderBy: { createdAt: "asc" },
+        },
+      },
+      orderBy: { updatedAt: "desc" },
+    });
+
+    return {
+      isDatabaseReady: true,
+      tickets,
+    };
+  } catch (error) {
+    if (isPrismaConnectionError(error)) {
+      return { isDatabaseReady: false, tickets: [] };
     }
     throw error;
   }

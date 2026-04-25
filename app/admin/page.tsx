@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Activity, FileArchive, GraduationCap, ShieldCheck, Users } from "lucide-react";
+import { Activity, FileArchive, GraduationCap, Headset, ShieldCheck, Users } from "lucide-react";
 import { getAdminOverviewData } from "@/lib/portal-data";
 import { requireAdminSession } from "@/lib/session";
 
@@ -24,6 +24,7 @@ export default async function AdminPage() {
         <MetricCard icon={GraduationCap} label="المدارس" value={data.metrics.totalSchools} />
         <MetricCard icon={Activity} label="التقييمات" value={data.metrics.totalEvaluations} />
         <MetricCard icon={FileArchive} label="الشواهد" value={data.metrics.totalEvidences} />
+        <MetricCard icon={Headset} label="تذاكر الدعم" value={data.metrics.openTickets} />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
@@ -51,6 +52,10 @@ export default async function AdminPage() {
                     <p className="mt-1 text-xs text-slate-500">
                       {user.role === "SUPER_ADMIN" ? "مشرف عام" : "مدير مدرسة"} - {user.isActive ? "نشط" : "موقوف"}
                     </p>
+                    <p className="mt-1 text-xs text-slate-500">
+                      {getSubscriptionLabel(user.subscriptionStatus)}
+                      {user.subscriptionEnd ? ` - حتى ${new Date(user.subscriptionEnd).toLocaleDateString("ar-SA")}` : ""}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -62,6 +67,7 @@ export default async function AdminPage() {
           <h2 className="text-xl font-black text-slate-900">أقسام الإدارة</h2>
           <div className="mt-5 grid gap-3">
             <QuickLink href="/admin/users" title="إدارة الحسابات" description="تعديل دور المستخدم وتفعيل الحسابات أو إيقافها." />
+            <QuickLink href="/admin/support" title="الدعم الفني" description="إدارة تذاكر المشتركين والرد عليها وتحديث حالتها." />
             <QuickLink href="/dashboard" title="الدخول إلى المنصة التعليمية" description="الانتقال إلى لوحة المدرسة والعمليات التنفيذية." />
           </div>
         </div>
@@ -99,4 +105,17 @@ function QuickLink({ href, title, description }: { href: string; title: string; 
       <p className="mt-1 text-sm leading-7 text-slate-500">{description}</p>
     </Link>
   );
+}
+
+function getSubscriptionLabel(status: "ACTIVE" | "TRIAL" | "EXPIRED" | "SUSPENDED") {
+  switch (status) {
+    case "TRIAL":
+      return "تجريبي";
+    case "EXPIRED":
+      return "منتهي";
+    case "SUSPENDED":
+      return "معلق";
+    default:
+      return "نشط";
+  }
 }

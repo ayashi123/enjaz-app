@@ -46,6 +46,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.fullName,
           role: user.role,
+          subscriptionStatus: user.subscriptionStatus,
           schoolName: user.schoolName,
           educationOffice: user.educationOffice,
           academicYear: user.academicYear,
@@ -58,6 +59,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.subscriptionStatus = user.subscriptionStatus;
         token.schoolName = user.schoolName;
         token.educationOffice = user.educationOffice;
         token.academicYear = user.academicYear;
@@ -68,6 +70,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as typeof session.user.role;
+        session.user.subscriptionStatus = token.subscriptionStatus as typeof session.user.subscriptionStatus;
         session.user.schoolName = token.schoolName as string;
         session.user.educationOffice = token.educationOffice as string;
         session.user.academicYear = token.academicYear as string;

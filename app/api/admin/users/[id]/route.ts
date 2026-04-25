@@ -24,16 +24,39 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       data: {
         role: parsed.data.role,
         isActive: parsed.data.isActive,
+        subscriptionStatus: parsed.data.subscriptionStatus,
+        subscriptionEnd: parsed.data.subscriptionEnd ? new Date(parsed.data.subscriptionEnd) : null,
       },
       select: {
         id: true,
         role: true,
         isActive: true,
+        subscriptionStatus: true,
+        subscriptionEnd: true,
       },
     });
 
     return NextResponse.json({ user });
   } catch (error) {
     return handleApiError(error, "تعذر تحديث بيانات الحساب.");
+  }
+}
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await requireAdminApiSession();
+    const { id } = await params;
+
+    if (id === session.user.id) {
+      return NextResponse.json({ message: "لا يمكن حذف حسابك الحالي." }, { status: 400 });
+    }
+
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    return handleApiError(error, "تعذر حذف الحساب.");
   }
 }
