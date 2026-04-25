@@ -14,7 +14,7 @@ export default async function LoginPage() {
   return (
     <AuthShell
       title="مرحبًا بعودتك"
-      description="سجّل الدخول للوصول إلى لوحة منصة إنجاز التعليمية ومتابعة بيانات المدرسة والمعلمين."
+      description="سجل الدخول للوصول إلى لوحة منصة إنجاز التعليمية ومتابعة المدرسة والتقييمات والتقارير والشواهد."
       footerText="هل تحتاج إلى حساب جديد؟"
       footerLink="/register"
       footerLinkLabel="إنشاء حساب"

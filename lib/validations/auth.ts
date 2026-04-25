@@ -10,7 +10,7 @@ export const registerSchema = z.object({
   email: z.string().email("أدخل بريدًا إلكترونيًا صحيحًا."),
   password: z.string().min(8, "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل."),
   schoolName: z.string().min(3, "أدخل اسم المدرسة."),
-  educationOffice: z.string().min(3, "أدخل مكتب التعليم أو الإدارة."),
+  educationOffice: z.string().min(3, "أدخل الإدارة التعليمية."),
   academicYear: z.string().min(3, "أدخل العام الدراسي."),
 });
 

@@ -7,6 +7,13 @@ export const supportTicketSchema = z.object({
   priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
 });
 
+export const publicSupportTicketSchema = z.object({
+  email: z.string().email("أدخل بريدًا إلكترونيًا صحيحًا."),
+  subject: z.string().min(3, "عنوان التذكرة قصير جدًا."),
+  description: z.string().min(10, "يرجى كتابة وصف واضح للمشكلة."),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH"]),
+});
+
 export const supportReplySchema = z.object({
   message: z.string().min(2, "اكتب ردًا صالحًا."),
   status: z.enum(["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"]).optional(),

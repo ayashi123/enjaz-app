@@ -13,6 +13,7 @@ import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 export function RegisterForm() {
   const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
+
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -64,18 +65,23 @@ export function RegisterForm() {
         <Field label="اسم المدير" error={form.formState.errors.fullName?.message}>
           <Input placeholder="أ. أحمد محمد" {...form.register("fullName")} />
         </Field>
+
         <Field label="البريد الإلكتروني" error={form.formState.errors.email?.message}>
           <Input type="email" placeholder="principal@school.sa" {...form.register("email")} />
         </Field>
+
         <Field label="كلمة المرور" error={form.formState.errors.password?.message}>
           <Input type="password" placeholder="ثمانية أحرف على الأقل" {...form.register("password")} />
         </Field>
+
         <Field label="اسم المدرسة" error={form.formState.errors.schoolName?.message}>
-          <Input placeholder="مدرسة النهضة المتوسطة" {...form.register("schoolName")} />
+          <Input placeholder="ابتدائية ومتوسطة وثانوية عياش" {...form.register("schoolName")} />
         </Field>
-        <Field label="مكتب التعليم / الإدارة" error={form.formState.errors.educationOffice?.message}>
-          <Input placeholder="مكتب تعليم شمال الرياض" {...form.register("educationOffice")} />
+
+        <Field label="الإدارة التعليمية" error={form.formState.errors.educationOffice?.message}>
+          <Input placeholder="الإدارة العامة للتعليم بمنطقة جازان" {...form.register("educationOffice")} />
         </Field>
+
         <Field label="العام الدراسي" error={form.formState.errors.academicYear?.message}>
           <Input placeholder="1447 / 1448 هـ" {...form.register("academicYear")} />
         </Field>

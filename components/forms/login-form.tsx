@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { LoaderCircle, LogIn } from "lucide-react";
+import { Headset, LoaderCircle, LogIn } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -87,6 +87,24 @@ export function LoginForm() {
           </>
         )}
       </Button>
+
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <Headset className="h-5 w-5" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm font-bold text-slate-900">الدعم الفني للمشتركين</p>
+            <p className="text-xs leading-6 text-slate-600">
+              إذا تعذر عليك الدخول أو كانت لديك مشكلة في الاشتراك أو الحساب، يمكنك إرسال طلب دعم مباشر لفريق
+              المتابعة.
+            </p>
+            <Link href="/support-access" className="text-sm font-bold text-primary hover:text-primary/80">
+              فتح الدعم الفني
+            </Link>
+          </div>
+        </div>
+      </div>
     </form>
   );
 }
